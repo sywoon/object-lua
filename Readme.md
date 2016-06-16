@@ -3,6 +3,8 @@ go on
 add Class:include(...) to complete mixintest
 
 
+--------------------------
+
 [Deprecated]
 
 I now prefer to use native [prototype-based object oriented programming][pbp], in both Lua and JavaScript.

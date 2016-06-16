@@ -22,6 +22,8 @@ function TestMixins:setUp()
     AMixin = Mixin:subclass()
 end
 
+TestMixins:setUp()
+
 function TestMixins:testDefintion()
     AMixin.getString = aMethod
 
@@ -38,6 +40,7 @@ function TestMixins:testClassIncludingMixin()
 
     assertEquals(object:getString(), 'Leopard')
 end
+--TestMixins:testClassIncludingMixin()
 
 function TestMixins:testMixinIncludingOtherMixinFails()
     local AnotherMixin = Mixin:subclass()
@@ -45,6 +48,7 @@ function TestMixins:testMixinIncludingOtherMixinFails()
                     AMixin:include(AnotherMixin)
                 end)
 end
+--TestMixins:testMixinIncludingOtherMixinFails()
 
 function TestMixins:testClassMethodOverrideMixinMethod()
     function AClass:shouldBeFromClass()
@@ -61,6 +65,7 @@ function TestMixins:testClassMethodOverrideMixinMethod()
     assertEquals(obj:shouldBeFromClass(), 'From class')
 
 end
+--TestMixins:testClassMethodOverrideMixinMethod()
 
 function TestMixins:testMixinMethodOverridesSuperClassMethod()
     function AClass:shouldBeFromMixin()
@@ -77,3 +82,26 @@ function TestMixins:testMixinMethodOverridesSuperClassMethod()
     local obj = AnotherClass:new()
     assertEquals(obj:shouldBeFromMixin(), 'From mixin')
 end
+--TestMixins:testMixinMethodOverridesSuperClassMethod()
+
+function TestMixins:testSuperMixinCall()
+	function AMixin:initialize(age)
+		self.age = age
+	end
+
+	local A = Object:subclass()
+	A:include(AMixin)
+
+	function A:initialize(name, age)
+		self.name = name
+		mixin.initialize(self, age)
+		super.initialize(self)
+	end
+	
+	a = A:new("S", 10)
+    assertEquals(a.name, 'S')
+    assertEquals(a.age, 10)
+	print(a.name, a.age)
+end
+
+TestMixins:testSuperMixinCall()

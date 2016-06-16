@@ -47,26 +47,32 @@ function subclass(self, className)
    return class
 end
 
-function include(self, ...)
-   _G.assert(_G.rawget(self, '__traits__') == nil)
-   local mixins = {...}
+function include(self, mixin)
+  _G.assert(_G.rawget(self, '__mixin__') == nil)
+
+  local newidx = _G.rawget(self.class.__prototype__, '__newindex')
+  _G.rawset(self.class.__prototype__, '__newindex', 
+          function (t, k, v) 
+            newidx(t, k, v)
+            local env = _G.getfenv(_G.rawget(t.__prototype__, k))
+            env.mixin = mixin.__prototype__
+          end)
+
    local mt = _G.debug.getmetatable(self.__prototype__)
    if 'table' == _G.type(mt.__index) then
       local newMt = _G.setmetatable({}, mt)
       _G.rawset(newMt, '__index', function(t, key)
-								for _, mixin in _G.ipairs(mixins) do
-									local f = mixin.__prototype__[key]
-									if f then 
-										return f 
-									end
-								end
-								return mt[key]
+                local f = mixin.__prototype__[key]
+                if f then 
+                  return f 
+                end
+                return mt[key]
                                end)
       _G.debug.setmetatable(self.__prototype__, newMt)
    end
-   _G.rawset(self, '__traits__', mixins)
+   
+  _G.rawset(self, "__mixin__", mixin)
 end
-
 
 function isMeta(self)
    return self.class == _M

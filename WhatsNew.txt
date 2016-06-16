@@ -4,6 +4,11 @@ you can use mixin in this way:
 	A = Object:subclass()
 	MixinB = Mixin:subclass()
 	A:include(MixinB)
+	
+	function A:initialize()
+		mixin.initialize(self)
+		super.initialize(self)
+	end
 
 === What's new in version 0.5.1 ===
 

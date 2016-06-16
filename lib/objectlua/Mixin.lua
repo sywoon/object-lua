@@ -1,14 +1,21 @@
 local Object = require 'objectlua.Object'
 
-local _ = Object:subclass(...)
+local mixin = Object:subclass(...)
 
-function _.class:new(...)
-    local o = super(self, ...)
-    o.__methods__ = {}
-    local mt = o.class.__prototype__
-    -- todo !
-    return o
+function mixin:subclass()
+	local sub = super.subclass(self)
+	local mt = getmetatable(sub)
+	local newidx = mt.__newindex
+	rawset(mt, '__newindex', function (t, k, v)
+								assert('funciton' == type(v), "mixin only has functions.")
+								return newidx(t, k, v)
+							 end)
+	return sub
+end
+
+function mixin.class:new(...)
+	error("Error:Mixin can't be instanciated.")
 end
 
 
-return _
+return mixin

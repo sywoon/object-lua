@@ -2,7 +2,7 @@
 -- Note: In the current implementation, mixins are intended to be the smallest element of code reuse after the function.
 -- So you cannot subclass mixins, and a mixin cannot include another mixin.
 --
-
+require "luaunit"
 local Object = require 'objectlua.Object'
 local Class = require 'objectlua.Class'
 local Mixin = require 'objectlua.Mixin'
@@ -19,7 +19,7 @@ local aMethod = function(self)
 function TestMixins:setUp()
     Class:reset()
     AClass = Object:subclass 'AClass'
-    AMixin = Mixin:new 'AMixin'
+    AMixin = Mixin:subclass()
 end
 
 function TestMixins:testDefintion()
@@ -40,7 +40,7 @@ function TestMixins:testClassIncludingMixin()
 end
 
 function TestMixins:testMixinIncludingOtherMixinFails()
-    local AnotherMixin = Mixin:new 'AnotherMixin'
+    local AnotherMixin = Mixin:subclass()
     assertError(function()
                     AMixin:include(AnotherMixin)
                 end)
